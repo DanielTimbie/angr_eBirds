@@ -21,7 +21,7 @@ The importand files are:
 Cornell Labs' eBird. For now, the only functionality is to pull a list of recent bird sightings. 
 Finally, `graphics` is a folder that contains all of the sprites used to run the game. 
 
-!!! If using this code, please go to the `ebird_api.py` file and $change the API key$ !!!
+!!! If using this code, please go to the `ebird_api.py` file and change the API key !!!
 
 To get started, run `main.py`. You will be greeted by the default start screen:
 
