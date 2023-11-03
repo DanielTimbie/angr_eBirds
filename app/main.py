@@ -4,6 +4,11 @@ import os
 from ebird_api import get_recent_observations
 
 
+import wx
+import random
+import os
+from ebird_api import get_recent_observations
+
 class MainMenu(wx.Frame):
     def __init__(self, parent, title):
         super(MainMenu, self).__init__(parent, title=title, size=(400, 600))
@@ -14,54 +19,43 @@ class MainMenu(wx.Frame):
         start_btn = wx.Button(self.panel, label="Start", pos=(150, 280))
         start_btn.Bind(wx.EVT_BUTTON, self.on_start)
         
-        # Switch background button
         self.switch_bg_btn = wx.Button(self.panel, label="Switch BG", pos=(10, 550))
         self.switch_bg_btn.Bind(wx.EVT_BUTTON, self.switch_background)
         
-        # Backgrounds
-        self.backgrounds = [wx.Image("graphics/backgrounds/sky.png", wx.BITMAP_TYPE_ANY).ConvertToBitmap(),
-                            wx.Image("graphics/backgrounds/woods.png", wx.BITMAP_TYPE_ANY).ConvertToBitmap()]
+        self.backgrounds = [
+            wx.Image("graphics/backgrounds/sky.png", wx.BITMAP_TYPE_ANY).ConvertToBitmap(),
+            wx.Image("graphics/backgrounds/woods.png", wx.BITMAP_TYPE_ANY).ConvertToBitmap()
+        ]
         self.current_bg_index = 0
 
-        # Create a text box for entering the location code
         self.location_code_text = wx.TextCtrl(self.panel, value="US-IL-031", pos=(50, 50), size=(300, 20))
 
-        # Add a button to fetch the recent birds
         self.fetch_birds_btn = wx.Button(self.panel, label="Fetch Recent Birds", pos=(150, 80))
         self.fetch_birds_btn.Bind(wx.EVT_BUTTON, self.fetch_recent_birds)   
         
-        # Static text to display recent bird observations
         self.recent_birds_display = wx.StaticText(self.panel, label="", pos=(50, 390))
 
-        # List all the bird sprite files from the sprites directory
         bird_sprite_files = os.listdir("graphics/bird sprites")
 
-        # Create the bird images dictionary
         self.bird_images_dict = {
             os.path.splitext(filename)[0]: wx.Image(f"graphics/bird sprites/{filename}", wx.BITMAP_TYPE_ANY).ConvertToBitmap()
             for filename in bird_sprite_files
-            if not filename.startswith('.')  # This is to ignore hidden files which sometimes present in directories
+            if not filename.startswith('.')
         }
 
-        # Add a placeholder image for birds not in the sprite list
         self.placeholder_image = wx.Image("graphics/bird sprites/___.png", wx.BITMAP_TYPE_ANY).ConvertToBitmap()
 
-
-        # loading the birds
         bird_sprite_files = [f for f in os.listdir("graphics/bird sprites/") if f.endswith(".png")]
         self.bird_images = [wx.Image(f"graphics/bird sprites/{filename}", wx.BITMAP_TYPE_ANY).ConvertToBitmap() for filename in bird_sprite_files]
-        bird_names = [os.path.splitext(filename)[0] for filename in bird_sprite_files]  # Strip the .png
+        bird_names = [os.path.splitext(filename)[0] for filename in bird_sprite_files]
         self.bird_choice = wx.Choice(self.panel, choices=bird_names, pos=(150, 250))
-        self.bird_choice.SetSelection(0)  # default to the first bird
-
-        # self.game_window = GameWindow(None, "Angr eBirds", self.current_bg_index, chosen_bird_image)
+        self.bird_choice.SetSelection(0)
 
     def fetch_recent_birds(self, event):
         region_code = self.location_code_text.GetValue()
         recent_birds = get_recent_observations(region_code)
 
         if recent_birds:
-            # Update the dropdown to show which birds have sprites and which do not
             playable_birds = []
             for bird in recent_birds:
                 if bird in self.bird_images_dict:
@@ -79,11 +73,9 @@ class MainMenu(wx.Frame):
     def on_start(self, event):
         selected_bird_name = self.bird_choice.GetStringSelection()
         
-        # Check if a placeholder should be used
         if "(placeholder)" in selected_bird_name:
             chosen_bird_image = self.placeholder_image
         else:
-            # Remove placeholder text if present
             selected_bird_name = selected_bird_name.replace(" (placeholder)", "")
             chosen_bird_image = self.bird_images_dict.get(selected_bird_name, self.placeholder_image)
 
@@ -212,17 +204,6 @@ class GameWindow(wx.Frame):
             # Bottom obstacle
             bottom_obstacle_y = self.obstacle_height + self.obstacle_gap
             dc.DrawBitmap(self.log_image, self.obstacle_x, bottom_obstacle_y)
-
-        # # Draw the obstacles
-        # dc.SetBrush(wx.Brush("grey"))  # color of the obstacles
-
-        # # Top obstacle
-        # dc.DrawRectangle(self.obstacle_x, 0, self.obstacle_width, self.obstacle_height)
-
-        # # Bottom obstacle
-        # bottom_obstacle_y = self.obstacle_height + self.obstacle_gap
-        # bottom_obstacle_height = self.panel.GetSize()[1] - bottom_obstacle_y
-        # dc.DrawRectangle(self.obstacle_x, bottom_obstacle_y, self.obstacle_width, bottom_obstacle_height)
 
         font = wx.Font(18, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD)
         dc.SetFont(font)
