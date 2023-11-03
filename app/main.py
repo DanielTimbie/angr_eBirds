@@ -3,16 +3,9 @@ import random
 import os
 from ebird_api import get_recent_observations
 
-
-import wx
-import random
-import os
-from ebird_api import get_recent_observations
-
 class MainMenu(wx.Frame):
     def __init__(self, parent, title):
         super(MainMenu, self).__init__(parent, title=title, size=(400, 600))
-        
         self.panel = wx.Panel(self)
         self.panel.Bind(wx.EVT_PAINT, self.on_paint_background)
         
