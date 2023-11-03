@@ -1,0 +1,1 @@
+requests==2.31.0  # Replace [version] with the version you installed.
